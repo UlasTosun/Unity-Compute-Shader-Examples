@@ -4,10 +4,18 @@ using UnityEngine;
 
 public class BasicComputeShaderController : MonoBehaviour {
     
+    [Header("References")]
+    [Tooltip("The compute shader that we will use to process the input texture.")]
     [SerializeField] private ComputeShader _computeShader;
+    [Tooltip("The renderer that we will use to display the output texture.")]
     [SerializeField] private Renderer _renderer;
-    [SerializeField] private int _textureResolution = 256;
+    [Tooltip("The input texture that we will use to process.")]
     [SerializeField] private Texture _inputTexture;
+
+    [Header("Settings")]
+    [Tooltip("The resolution of the output render texture.")]
+    [Min(32)]
+    [SerializeField] private int _textureResolution = 256;
 
     private RenderTexture _renderTexture;
 

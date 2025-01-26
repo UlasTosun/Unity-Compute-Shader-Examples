@@ -6,12 +6,20 @@ using Unity.Mathematics;
 public class SimulationController : MonoBehaviour {
 
     [Header("References")]
+    [Tooltip("The compute shader that will be used to update the positions of the transforms.")]
     [SerializeField] private ComputeShader _computeShader;
+    [Tooltip("The transforms that will be updated by the compute shader.")]
     [SerializeField] private Transform[] _transforms;
 
     [Header("Simulation Settings")]
+    [Tooltip("The amplitude of the wave.")]
+    [Min(0f)]
     [SerializeField] private float _amplitude = 2f;
+    [Tooltip("The frequency of the wave.")]
+    [Min(0f)]
     [SerializeField] private float _frequency = 9f;
+    [Tooltip("The phase multiplier of the wave.")]
+    [Min(0f)]
     [SerializeField] private float _phaseMultiplier = 5f;
 
 

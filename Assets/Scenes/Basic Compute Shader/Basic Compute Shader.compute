@@ -26,7 +26,8 @@ void CSMain (uint3 id : SV_DispatchThreadID) {
     float2 uv = float2(id.xy) / float2(width, height); // Calculate the UV coordinate of the pixel.
 
     float4 color = InputTex.SampleLevel(sampler_InputTex, uv, 0); // Sample the color from the input texture.
+    float grayscale = dot(color.rgb, float3(0.3, 0.59, 0.11)); // Convert the color to grayscale.
 
     // Use id.xy as the pixel coordinate
-    Result[id.xy] = color; // Write the color to the texture.
+    Result[id.xy] = grayscale; // Write the grayscale color to the texture.
 }

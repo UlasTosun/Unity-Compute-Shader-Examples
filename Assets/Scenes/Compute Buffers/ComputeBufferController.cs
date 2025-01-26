@@ -5,9 +5,17 @@ using UnityEngine;
 
 public class ComputeBufferController : MonoBehaviour {
     
+    [Header("References")]
+    [Tooltip("The compute shader that will be used to draw the circles on the texture.")]
     [SerializeField] private ComputeShader _computeShader;
+    [Tooltip("The renderer that will display the output texture.")]
     [SerializeField] private Renderer _renderer;
+
+    [Header("Settings")]
+    [Tooltip("The resolution of the output texture.")]
+    [Min(32)]
     [SerializeField] private int _textureResolution = 256;
+    [Tooltip("The circles that will be drawn on the texture.")]
     [SerializeField] private List <Circle> _circles = new();
 
     private RenderTexture _renderTexture;
