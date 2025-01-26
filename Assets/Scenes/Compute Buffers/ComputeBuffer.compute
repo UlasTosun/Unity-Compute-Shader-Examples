@@ -1,0 +1,65 @@
+
+// Each #kernel tells which function to compile. You can have many kernels.
+#pragma kernel CSMain
+
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it with C# script by using SetTexture() method.
+// CPU and GPU will communicate through this texture, so it is a bridge between CPU and GPU.
+// RW means "enable read-write". So, both CPU and GPU can read and write this texture.
+RWTexture2D<float4> Result;
+
+
+
+struct Circle {
+    float2 center;
+    float radius;
+    float smooth;
+    float4 color;
+};
+
+
+// Create a buffer to store the circle data. CPU and GPU will communicate through this buffer.
+StructuredBuffer<Circle> CircleBuffer;
+
+
+
+float CircleShape(float2 uv, Circle circle) {
+    float len = length(uv - circle.center);
+    return smoothstep(len - circle.smooth, len + circle.smooth, circle.radius);
+}
+
+
+
+// The main function of the compute shader. Since, circle data is one-dimensional, we only need one dimension.
+// This thread has 64 x 1 x 1 = 64 threads in total per thread group.
+[numthreads(64, 1, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+
+    // Get the width and height of the texture.
+    uint width;
+    uint height;
+    Result.GetDimensions(width, height);
+
+    float2 uv = float2(id.xy) / float2(width, height); // Calculate the UV coordinate of the pixel.
+
+    // Get the number of circles in the buffer.
+    uint circleCount;
+    uint stride;
+    CircleBuffer.GetDimensions(circleCount, stride);
+
+    float4 color;
+    for (uint i = 0; i < circleCount; i++) {
+        Circle circle = CircleBuffer[i]; // Get the circle data from the buffer.
+        float shape = CircleShape(uv, circle); // Create a circle shape.
+
+        if (shape > 0)
+            color += circle.color * shape; // Set the color of the pixel if it is inside the circle.
+    }
+
+    color = saturate(color); // Clamp the color between 0 and 1.
+    
+    // Use id.xy as the pixel coordinate
+    Result[id.xy] = color; // Set the color of the pixel.
+
+}

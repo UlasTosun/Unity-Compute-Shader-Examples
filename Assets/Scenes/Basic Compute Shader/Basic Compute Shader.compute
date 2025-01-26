@@ -1,0 +1,32 @@
+
+// Each #kernel tells which function to compile. You can have many kernels.
+#pragma kernel CSMain
+
+
+
+// Create a RenderTexture with enableRandomWrite flag and set it with C# script by using SetTexture() method.
+// CPU and GPU will communicate through this texture, so it is a bridge between CPU and GPU.
+// RW means "enable read-write". So, both CPU and GPU can read and write this texture.
+RWTexture2D<float4> Result;
+
+Texture2D<float4> InputTex;
+SamplerState sampler_InputTex;
+
+
+
+// The main function of the compute shader.
+// This thread has 8 x 8 x 1 = 64 threads in total per thread group.
+[numthreads(8 ,8, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID) {
+
+    uint width;
+    uint height;
+    Result.GetDimensions(width, height); // Get the width and height of the texture.
+
+    float2 uv = float2(id.xy) / float2(width, height); // Calculate the UV coordinate of the pixel.
+
+    float4 color = InputTex.SampleLevel(sampler_InputTex, uv, 0); // Sample the color from the input texture.
+
+    // Use id.xy as the pixel coordinate
+    Result[id.xy] = color; // Write the color to the texture.
+}
