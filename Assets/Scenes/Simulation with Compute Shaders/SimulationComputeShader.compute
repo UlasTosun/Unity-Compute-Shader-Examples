@@ -1,0 +1,25 @@
+// Each #kernel tells which function to compile. You can have many kernels.
+#pragma kernel CSMain
+
+
+
+// Create a buffer to store the circle data. CPU and GPU will communicate through this buffer.
+RWStructuredBuffer<float3> PositionBuffer;
+
+float Amplitude;
+float Frequency;
+float PhaseMultiplier;
+float ElapsedTime;
+
+
+
+// The main function of the compute shader. Since, circle data is one-dimensional, we only need one dimension.
+// This thread has 128 x 1 x 1 threads in total per thread group.
+[numthreads(128, 1, 1)]
+void CSMain(uint3 id : SV_DispatchThreadID) {
+
+    float x = PositionBuffer[id.x].x;
+    float y = Amplitude * sin(Frequency * x + PhaseMultiplier * ElapsedTime);
+
+    PositionBuffer[id.x] = float3(x, y, PositionBuffer[id.x].z);
+}
